@@ -50,6 +50,39 @@
   background-color: #e6f7ff !important;
 }
 
+/* 表格行高度自適應 */
+.ant-table-tbody > tr > td {
+  padding: 8px 16px;
+  vertical-align: middle; /* 內容上下置中對齊 */
+  text-align: left; /* 內容左右靠左對齊 */
+}
+
+/* 流水號欄位居中對齊 */
+.ant-table-tbody > tr > td:first-child {
+  text-align: center; /* 流水號居中對齊 */
+  vertical-align: middle;
+}
+
+/* 表格標題也設置為左對齊 */
+.ant-table-thead > tr > th {
+  text-align: left; /* 標題左對齊 */
+  vertical-align: middle; /* 標題上下置中 */
+}
+
+/* 流水號標題也居中對齊 */
+.ant-table-thead > tr > th:first-child {
+  text-align: center; /* 流水號標題居中對齊 */
+}
+
+/* 備註欄位特殊樣式 */
+.ant-table-tbody > tr > td:last-child {
+  max-width: 300px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  text-align: left; /* 備註欄位也左對齊 */
+  vertical-align: middle; /* 備註欄位也上下置中 */
+}
+
 /* 確保搜尋框樣式 */
 .ant-input-search .ant-input-group-addon {
   background-color: #1890ff;
@@ -170,11 +203,52 @@
   flex-shrink: 0;
 }
 
-/* 搜尋區域樣式 */
+/* 搜尋容器樣式 */
 .search-container {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  flex-shrink: 0;
+  gap: 12px;
+}
+
+/* 日期篩選按鈕樣式 */
+.ant-dropdown-trigger.ant-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 日期篩選下拉選單樣式 */
+.ant-checkbox-group {
+  width: 100%;
+}
+
+.ant-checkbox-group .ant-checkbox-wrapper {
+  margin-bottom: 4px;
+  margin-right: 0;
+  width: 100%;
+}
+
+/* 日期篩選下拉選單容器背景 */
+.ant-dropdown {
+  z-index: 1050;
+}
+
+.ant-dropdown .ant-dropdown-menu,
+.ant-dropdown-menu {
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  padding: 0;
+}
+
+/* 自定義下拉選單內容樣式 */
+.day-filter-dropdown {
+  background: #ffffff;
+  padding: 12px;
+  min-width: 200px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #d9d9d9;
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Typography, Spin, message, Input, Space } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Table, Card, Typography, Spin, message, Input, Space, Dropdown, Button, Checkbox } from 'antd';
+import { SearchOutlined, CalendarOutlined } from '@ant-design/icons';
 import Papa from 'papaparse';
 
 const { Title } = Typography;
@@ -13,6 +13,8 @@ const CourseReport = () => {
   const [loading, setLoading] = useState(true);
   const [columns, setColumns] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   useEffect(() => {
     // 讀取並處理 CSV 資料
@@ -49,6 +51,13 @@ const CourseReport = () => {
 
     loadCsvData();
   }, []);
+
+  useEffect(() => {
+    // 當 processedData 變更時，重新應用篩選條件
+    if (processedData.length > 0) {
+      applyFilters(searchText, selectedDays);
+    }
+  }, [processedData]);
 
   const processCsvData = (rawData) => {
     try {
@@ -160,8 +169,23 @@ const CourseReport = () => {
         dataIndex: `col_${index}`,
         key: `col_${index}`,
         width: getColumnWidth(index, header),
-        ellipsis: true,
-        render: (text) => text || '-',
+        ellipsis: index !== 9, // 備註欄位（索引9）不使用 ellipsis
+        render: (text) => {
+          if (index === 9) {
+            // 備註欄位特殊處理：支援換行顯示
+            return (
+              <div style={{ 
+                whiteSpace: 'pre-wrap', 
+                wordBreak: 'break-word',
+                lineHeight: '1.4',
+                maxWidth: '300px'
+              }}>
+                {text || '-'}
+              </div>
+            );
+          }
+          return text || '-';
+        },
         // 為主要欄位添加搜尋功能
         ...(index <= 2 || index === 6 || index === 7 || index === 8 ? {
           filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -232,40 +256,149 @@ const CourseReport = () => {
     if (index === 6) return 200;  // 上課時間（合併後的欄位，需要更寬）
     if (index === 7) return 100;  // 使用教室
     if (index === 8) return 120;  // 授課教師
-    if (index === 9) return 400;  // 備註
+    if (index === 9) return 300;  // 備註（調整為更合適的寬度）
     return 100;
   };
 
   // 全域搜尋功能
   const handleGlobalSearch = (value) => {
     setSearchText(value);
-    if (!value) {
-      setFilteredData(processedData);
-      return;
+    applyFilters(value, selectedDays);
+  };
+
+  // 日期篩選功能
+  const handleDayFilter = (checkedDays) => {
+    setSelectedDays(checkedDays);
+    applyFilters(searchText, checkedDays);
+  };
+
+  // 統一篩選邏輯
+  const applyFilters = (searchValue, dayFilters) => {
+    let filtered = [...processedData];
+
+    // 應用全域搜尋
+    if (searchValue) {
+      filtered = filtered.filter(record =>
+        Object.values(record).some(val =>
+          val && val.toString().toLowerCase().includes(searchValue.toLowerCase())
+        )
+      );
     }
 
-    const filtered = processedData.filter(record =>
-      Object.values(record).some(val =>
-        val && val.toString().toLowerCase().includes(value.toLowerCase())
-      )
-    );
+    // 應用日期篩選
+    if (dayFilters && dayFilters.length > 0) {
+      filtered = filtered.filter(record => {
+        const schedule = record.col_6 || ''; // 上課時間欄位
+        return dayFilters.some(day => {
+          const dayAbbr = getDayAbbreviation(day);
+          return schedule.includes(dayAbbr);
+        });
+      });
+    }
+
     setFilteredData(filtered);
   };
+
+  // 取得星期縮寫
+  const getDayAbbreviation = (day) => {
+    const dayMap = {
+      '星期一': 'Mon.',
+      '星期二': 'Tue.',
+      '星期三': 'Wed.',
+      '星期四': 'Thu.',
+      '星期五': 'Fri.',
+      '星期六': 'Sat.',
+      '星期日': 'Sun.'
+    };
+    return dayMap[day] || day;
+  };
+
+  // 日期篩選器的選項
+  const dayOptions = [
+    { label: '星期一', value: '星期一' },
+    { label: '星期二', value: '星期二' },
+    { label: '星期三', value: '星期三' },
+    { label: '星期四', value: '星期四' },
+    { label: '星期五', value: '星期五' },
+    { label: '星期六', value: '星期六' },
+    { label: '星期日', value: '星期日' }
+  ];
+
+  // 處理日期勾選變更
+  const onDayChange = (checkedValues) => {
+    handleDayFilter(checkedValues);
+  };
+
+  // 清除日期篩選
+  const clearDayFilter = () => {
+    setSelectedDays([]);
+    applyFilters(searchText, []);
+    setDropdownVisible(false);
+  };
+
+  // 日期篩選器下拉選單內容
+  const dayFilterDropdown = (
+    <div className="day-filter-dropdown">
+      <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>選擇上課日期：</div>
+      <Checkbox.Group
+        options={dayOptions}
+        value={selectedDays}
+        onChange={onDayChange}
+        style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}
+      />
+      <div style={{ marginTop: '12px', textAlign: 'right' }}>
+        <Button 
+          size="small" 
+          onClick={clearDayFilter}
+          style={{ marginRight: '8px' }}
+        >
+          清除
+        </Button>
+        <Button 
+          size="small" 
+          type="primary" 
+          onClick={() => setDropdownVisible(false)}
+        >
+          確定
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="course-report-container">
       <Card>
         <div className="search-container">
-          <Search
-            placeholder="全域搜尋課程資料..."
-            allowClear
-            enterButton="搜尋"
-            size="large"
-            value={searchText}
-            onChange={e => handleGlobalSearch(e.target.value)}
-            onSearch={handleGlobalSearch}
-            style={{ maxWidth: '400px' }}
-          />
+          <Space size="middle">
+            <Search
+              placeholder="全域搜尋課程資料..."
+              allowClear
+              enterButton="搜尋"
+              size="large"
+              value={searchText}
+              onChange={e => handleGlobalSearch(e.target.value)}
+              onSearch={handleGlobalSearch}
+              style={{ maxWidth: '400px' }}
+            />
+            <Dropdown
+              overlay={dayFilterDropdown}
+              trigger={['click']}
+              visible={dropdownVisible}
+              onVisibleChange={setDropdownVisible}
+              placement="bottomLeft"
+            >
+              <Button 
+                size="large" 
+                icon={<CalendarOutlined />}
+                style={{ 
+                  color: selectedDays.length > 0 ? '#1890ff' : undefined,
+                  borderColor: selectedDays.length > 0 ? '#1890ff' : undefined
+                }}
+              >
+                 {selectedDays.length > 0 && `(${selectedDays.length})`}
+              </Button>
+            </Dropdown>
+          </Space>
         </div>
         
         {loading ? (
@@ -278,7 +411,7 @@ const CourseReport = () => {
             <Table
               columns={columns}           // 表格欄位定義
               dataSource={filteredData}   // 過濾後的資料
-              scroll={{ x: 1400, y: 'calc(100vh - 220px)' }}  // 調整水平滾動寬度
+              scroll={{ x: 1300, y: 'calc(100vh - 220px)' }}  // 調整水平滾動寬度以適應螢幕
               pagination={false}          // 移除分頁器
               size="small"
               bordered
