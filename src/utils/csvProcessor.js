@@ -1,6 +1,32 @@
 import Papa from 'papaparse';
 
-// CSV 檔案讀取和解析
+// 處理上傳的 CSV 檔案內容
+export const processUploadedCsv = (csvContent) => {
+  return new Promise((resolve, reject) => {
+    Papa.parse(csvContent, {
+      complete: (result) => {
+        try {
+          if (result.errors.length > 0) {
+            console.error('CSV 解析錯誤:', result.errors);
+          }
+          
+          const processedResult = processCsvData(result.data);
+          resolve(processedResult);
+        } catch (error) {
+          reject(error);
+        }
+      },
+      error: (error) => {
+        reject(error);
+      },
+      header: false,
+      skipEmptyLines: false,
+      encoding: 'UTF-8'
+    });
+  });
+};
+
+// CSV 檔案讀取和解析（保留原有功能，供未來需要時使用）
 export const loadCsvData = async () => {
   return new Promise((resolve, reject) => {
     const loadData = async () => {
@@ -39,7 +65,7 @@ export const loadCsvData = async () => {
 // CSV 資料處理和轉換
 export const processCsvData = (rawData) => {
   if (!rawData || rawData.length < 3) {
-    throw new Error('CSV 資料格式不正確');
+    throw new Error('CSV 資料格式不正確，至少需要包含表頭和一筆資料');
   }
 
   console.log('原始資料列數:', rawData.length);
@@ -50,6 +76,11 @@ export const processCsvData = (rawData) => {
   // 步驟2: 重新命名欄位 - 移除星期欄位，新增上課時間欄位
   const mainHeaders = dfRaw[0];
   const subHeaders = dfRaw[1];
+  
+  // 檢查表頭是否存在
+  if (!mainHeaders || !subHeaders) {
+    throw new Error('CSV 檔案格式錯誤：缺少必要的表頭資訊');
+  }
   
   // 建立星期縮寫對應表
   const dayAbbreviations = {
@@ -78,6 +109,10 @@ export const processCsvData = (rawData) => {
 
   // 步驟3: 刪除表頭列並重設索引
   const dataRows = dfRaw.slice(2);
+  
+  if (dataRows.length === 0) {
+    throw new Error('CSV 檔案中沒有實際的課程資料');
+  }
   
   // 步驟4: 資料處理 - 合併星期資料
   const processedRows = dataRows.map((row, rowIndex) => {

@@ -252,3 +252,72 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border: 1px solid #d9d9d9;
 }
+
+/* 檔案上傳組件樣式 */
+.ant-upload.ant-upload-drag {
+  border: 2px dashed #d9d9d9;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.ant-upload.ant-upload-drag:hover {
+  border-color: #1890ff;
+  background: #f0f9ff;
+}
+
+.ant-upload.ant-upload-drag.ant-upload-drag-hover {
+  border-color: #1890ff;
+  background: #e6f7ff;
+}
+
+.ant-upload.ant-upload-drag:not(.ant-upload-disabled):hover {
+  border-color: #1890ff;
+}
+
+.ant-upload-drag-icon {
+  margin-bottom: 16px;
+}
+
+.ant-upload-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.ant-upload-hint {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 檔案上傳容器動畫 */
+.file-upload-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 載入動畫優化 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  gap: 16px;
+}
+
+.loading-container div {
+  font-size: 16px;
+  color: #666;
+}

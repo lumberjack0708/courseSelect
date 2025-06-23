@@ -2,52 +2,64 @@ import React, { useState, useEffect } from 'react';
 import { Card, Spin, message } from 'antd';
 import SearchFilter from '../components/SearchFilter';
 import CourseTable from '../components/CourseTable';
-import { loadCsvData, processCsvData, getDayAbbreviation } from '../utils/csvProcessor';
+import FileUpload from '../components/FileUpload';
+import { processUploadedCsv, getDayAbbreviation } from '../utils/csvProcessor';
 
 const CourseReportPage = () => {
   const [processedData, setProcessedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [headers, setHeaders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectedDays, setSelectedDays] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  useEffect(() => {
-    const initializeData = async () => {
-      try {
-        setLoading(true);
-        
-        // 載入 CSV 資料
-        const rawData = await loadCsvData();
-        
-        // 處理 CSV 資料
-        const { headers: processedHeaders, data: processedRows } = processCsvData(rawData);
-        
-        setHeaders(processedHeaders);
-        setProcessedData(processedRows);
-        setFilteredData(processedRows);
-        
-        console.log('✅ 已完成報表重組');
-        message.success(`課程資料載入成功，共 ${processedRows.length} 筆資料`);
-        
-      } catch (error) {
-        console.error('載入課程資料時發生錯誤:', error);
-        message.error('載入課程資料失敗: ' + error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeData();
-  }, []);
+  const [hasData, setHasData] = useState(false);
+  const [currentFileName, setCurrentFileName] = useState('');
 
   useEffect(() => {
     // 當 processedData 變更時，重新應用篩選條件
     if (processedData.length > 0) {
       applyFilters(searchText, selectedDays);
     }
-  }, [processedData]);
+  }, [processedData, searchText, selectedDays]);
+
+  // 處理檔案上傳
+  const handleFileUpload = async (csvContent, fileName) => {
+    if (!csvContent) {
+      // 檔案被移除
+      setHasData(false);
+      setProcessedData([]);
+      setFilteredData([]);
+      setHeaders([]);
+      setCurrentFileName('');
+      setSearchText('');
+      setSelectedDays([]);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // 處理上傳的 CSV 資料
+      const { headers: processedHeaders, data: processedRows } = await processUploadedCsv(csvContent);
+      
+      setHeaders(processedHeaders);
+      setProcessedData(processedRows);
+      setFilteredData(processedRows);
+      setHasData(true);
+      setCurrentFileName(fileName);
+      
+      console.log('✅ 已完成報表重組');
+      message.success(`檔案 "${fileName}" 載入成功！共處理 ${processedRows.length} 筆課程資料，可使用搜尋和篩選功能查看內容。`, 4);
+      
+    } catch (error) {
+      console.error('處理檔案時發生錯誤:', error);
+      message.error('處理檔案失敗: ' + error.message);
+      setHasData(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 統一篩選邏輯
   const applyFilters = (searchValue, dayFilters) => {
@@ -88,28 +100,51 @@ const CourseReportPage = () => {
     applyFilters(searchText, checkedDays);
   };
 
+  // 重新上傳檔案
+  const handleReupload = () => {
+    setHasData(false);
+    setProcessedData([]);
+    setFilteredData([]);
+    setHeaders([]);
+    setCurrentFileName('');
+    setSearchText('');
+    setSelectedDays([]);
+  };
+
   return (
     <div className="course-report-container">
       <Card>
-        <SearchFilter
-          searchText={searchText}
-          onSearch={handleGlobalSearch}
-          selectedDays={selectedDays}
-          onDayFilter={handleDayFilter}
-          dropdownVisible={dropdownVisible}
-          setDropdownVisible={setDropdownVisible}
-        />
-        
-        {loading ? (
-          <div className="loading-container">
-            <Spin size="large" />
-            <div>正在載入課程資料...</div>
-          </div>
-        ) : (
-          <CourseTable
-            data={filteredData}
-            headers={headers}
+        {!hasData ? (
+          // 檔案上傳階段
+          <FileUpload 
+            onFileUploaded={handleFileUpload}
+            loading={loading}
           />
+        ) : (
+          // 報表顯示階段
+          <>
+            <SearchFilter
+              searchText={searchText}
+              onSearch={handleGlobalSearch}
+              selectedDays={selectedDays}
+              onDayFilter={handleDayFilter}
+              dropdownVisible={dropdownVisible}
+              setDropdownVisible={setDropdownVisible}
+              onReupload={handleReupload}
+            />
+            
+            {loading ? (
+              <div className="loading-container">
+                <Spin size="large" />
+                <div>正在處理檔案...</div>
+              </div>
+            ) : (
+              <CourseTable
+                data={filteredData}
+                headers={headers}
+              />
+            )}
+          </>
         )}
       </Card>
     </div>

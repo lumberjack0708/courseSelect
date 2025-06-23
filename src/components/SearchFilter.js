@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Space, Dropdown, Button, Checkbox } from 'antd';
-import { SearchOutlined, CalendarOutlined } from '@ant-design/icons';
+import { SearchOutlined, CalendarOutlined, UploadOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 
@@ -10,7 +10,8 @@ const SearchFilter = ({
   selectedDays,
   onDayFilter,
   dropdownVisible,
-  setDropdownVisible
+  setDropdownVisible,
+  onReupload
 }) => {
   // 日期篩選器的選項
   const dayOptions = [
@@ -94,6 +95,16 @@ const SearchFilter = ({
             {selectedDays.length > 0 && `(${selectedDays.length})`}
           </Button>
         </Dropdown>
+        {onReupload && (
+          <Button 
+            size="large"
+            icon={<UploadOutlined />}
+            onClick={onReupload}
+            type="default"
+          >
+            重新上傳
+          </Button>
+        )}
       </Space>
     </div>
   );
