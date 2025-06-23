@@ -1,0 +1,194 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 自定義表格樣式 */
+.ant-table-tbody > tr.even-row > td {
+  background-color: #fafafa;
+}
+
+.ant-table-tbody > tr.odd-row > td {
+  background-color: #ffffff;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: #e6f7ff !important;
+}
+
+/* 確保搜尋框樣式 */
+.ant-input-search .ant-input-group-addon {
+  background-color: #1890ff;
+}
+
+.ant-input-search .ant-input-group-addon .ant-btn {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+/* 表格容器樣式 */
+.course-report-container {
+  padding: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: calc(100vh - 64px); /* 完整視窗高度減去導航欄 */
+  display: flex;
+  flex-direction: column;
+}
+
+.course-report-container .ant-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.course-report-container .ant-card-body {
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 表格容器內部調整 */
+.table-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* 關鍵：允許 flex 項目縮小 */
+  overflow: hidden;
+}
+
+.table-wrapper .ant-table-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.table-wrapper .ant-table {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.table-wrapper .ant-table-container {
+  flex: 1;
+  overflow: auto; /* 允許表格內容滾動 */
+}
+
+.table-wrapper .ant-pagination {
+  flex-shrink: 0; /* 確保分頁器不會被壓縮 */
+  margin-top: 16px !important;
+  padding: 0;
+}
+
+/* 響應式設計 */
+@media (max-width: 1200px) {
+  .course-report-container {
+    max-width: 100%;
+    padding: 12px;
+    height: calc(100vh - 64px);
+  }
+}
+
+@media (max-width: 768px) {
+  .course-report-container {
+    padding: 8px;
+    height: calc(100vh - 64px);
+  }
+  
+  .course-report-container .ant-card-body {
+    padding: 16px;
+  }
+  
+  .table-wrapper .ant-pagination {
+    margin-top: 12px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .course-report-container {
+    padding: 6px;
+    height: calc(100vh - 64px);
+  }
+  
+  .course-report-container .ant-card-body {
+    padding: 12px;
+  }
+  
+  .table-wrapper .ant-pagination {
+    margin-top: 8px !important;
+  }
+}
+
+/* 加載動畫 */
+.loading-container {
+  text-align: center;
+  padding: 30px 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-container .ant-spin {
+  margin-bottom: 12px;
+}
+
+/* 表格標題樣式 */
+.course-report-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1890ff;
+  flex-shrink: 0;
+}
+
+/* 搜尋區域樣式 */
+.search-container {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-shrink: 0;
+}
