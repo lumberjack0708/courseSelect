@@ -235,15 +235,8 @@ const CourseReport = () => {
             <Table
               columns={columns}           // 表格欄位定義
               dataSource={filteredData}   // 過濾後的資料
-              scroll={{ x: 1800, y: 'calc(100vh - 280px)' }}  // 水平和垂直滾動
-              pagination={{       // 分頁器
-                pageSize: 50,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => 
-                  `第 ${range[0]}-${range[1]} 筆，共 ${total} 筆課程資料`,
-                pageSizeOptions: ['20', '50', '100', '200']
-              }}
+              scroll={{ x: 1800, y: 'calc(100vh - 220px)' }}  // 調整垂直滾動高度
+              pagination={false}          // 移除分頁器
               size="small"
               bordered
               rowClassName={(record, index) => index % 2 === 0 ? 'even-row' : 'odd-row'}

@@ -116,12 +116,6 @@
   overflow: auto; /* 允許表格內容滾動 */
 }
 
-.table-wrapper .ant-pagination {
-  flex-shrink: 0; /* 確保分頁器不會被壓縮 */
-  margin-top: 16px !important;
-  padding: 0;
-}
-
 /* 響應式設計 */
 @media (max-width: 1200px) {
   .course-report-container {
@@ -140,10 +134,6 @@
   .course-report-container .ant-card-body {
     padding: 16px;
   }
-  
-  .table-wrapper .ant-pagination {
-    margin-top: 12px !important;
-  }
 }
 
 @media (max-width: 576px) {
@@ -154,10 +144,6 @@
   
   .course-report-container .ant-card-body {
     padding: 12px;
-  }
-  
-  .table-wrapper .ant-pagination {
-    margin-top: 8px !important;
   }
 }
 
